@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>클래스로 마켓 문서 질문</title>
+  <style>
+    :root {
+      --bg: #f7f7f5; --card: #fff; --text: #1d1d1b; --muted: #6b6b66;
+      --line: #e2e2dd; --accent: #2f5fd0; --accent-text: #fff; --error: #b3261e;
+    }
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #161616; --card: #202020; --text: #ececea; --muted: #9a9a94;
+        --line: #333; --accent: #7aa2ff; --accent-text: #0f1a33; --error: #ff8a80;
+      }
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; background: var(--bg); color: var(--text); line-height: 1.6;
+      font-family: "Pretendard", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+    }
+    main { max-width: 720px; margin: 0 auto; padding: 32px 16px 64px; }
+    h1 { font-size: 1.4rem; margin: 0 0 4px; }
+    h2 { font-size: 1rem; margin: 0 0 8px; }
+    .sub { margin: 0 0 24px; color: var(--muted); }
+    label { display: block; font-weight: 600; margin-bottom: 6px; }
+    textarea {
+      width: 100%; padding: 12px; font: inherit; color: inherit; background: var(--card);
+      border: 1px solid var(--line); border-radius: 8px; resize: vertical;
+    }
+    textarea:focus-visible, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .error { color: var(--error); margin: 8px 0 0; }
+    button {
+      margin-top: 12px; padding: 10px 20px; font: inherit; font-weight: 600; cursor: pointer;
+      background: var(--accent); color: var(--accent-text); border: 0; border-radius: 8px;
+    }
+    button:disabled { opacity: .6; cursor: progress; }
+    section { margin-top: 28px; padding: 16px; background: var(--card);
+              border: 1px solid var(--line); border-radius: 8px; }
+    .answer { margin: 0; white-space: pre-wrap; }
+    ol { margin: 0; padding: 0; list-style: none; }
+    li + li { margin-top: 12px; padding-top: 12px; border-top: 1px solid var(--line); }
+    .meta { display: flex; flex-wrap: wrap; gap: 4px 12px; font-size: .875rem; color: var(--muted); }
+    .meta .source { color: var(--text); font-weight: 600; }
+    .preview { margin: 4px 0 0; font-size: .9rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>클래스로 마켓 고객센터</h1>
+    <p class="sub">문서에서 찾은 내용으로만 답해요.</p>
+
+    <form method="post" id="ask-form">
+      <label for="question">질문</label>
+      <textarea id="question" name="question" rows="3" required>{{ question }}</textarea>
+      {% if error %}<p class="error" role="alert">{{ error }}</p>{% endif %}
+      <button type="submit" id="ask-btn">물어보기</button>
+    </form>
+
+    {% if answer %}
+    <section>
+      <h2>답</h2>
+      <p class="answer">{{ answer }}</p>
+    </section>
+
+    <section>
+      <h2>찾아온 조각</h2>
+      <ol>
+        {% for c in chunks %}
+        <li>
+          <div class="meta">
+            <span>{{ c.rank }}위</span>
+            <span class="source">{{ c.source }}</span>
+            <span>점수 {{ c.score }}</span>
+          </div>
+          <p class="preview">{{ c.preview }}{% if c.more %}…{% endif %}</p>
+        </li>
+        {% endfor %}
+      </ol>
+    </section>
+    {% endif %}
+  </main>
+
+  <script>
+    // 답이 올 때까지 몇 초 걸리므로, 중복 제출을 막고 진행 중임을 보여 준다
+    document.getElementById("ask-form").addEventListener("submit", function () {
+      var btn = document.getElementById("ask-btn");
+      btn.disabled = true;
+      btn.textContent = "찾는 중…";
+    });
+  </script>
+</body>
+</html>
